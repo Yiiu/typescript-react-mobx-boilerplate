@@ -1,18 +1,20 @@
 import * as React from 'react';
-import { COUNT_ROUTER } from '@constants/stores';
-import { inject, observer } from 'mobx-react';
-import './App.css';
 
-import logo from './logo.svg';
+import { inject, observer } from 'mobx-react';
+
+import { COUNT_ROUTER } from '@constants/stores';
 import { CountStore } from '@stores';
 
-export interface IndexProp{
+import './App.css';
+import logo from './logo.svg';
+
+export interface IndexProp {
   [COUNT_ROUTER]: CountStore;
 }
 
 @inject(COUNT_ROUTER)
 @observer
-class App extends React.Component<IndexProp> {
+export default class App extends React.Component<IndexProp> {
   public render() {
     return (
       <div className="App">
@@ -30,5 +32,3 @@ class App extends React.Component<IndexProp> {
     );
   }
 }
-
-export default App;

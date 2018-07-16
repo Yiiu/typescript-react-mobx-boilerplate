@@ -1,13 +1,12 @@
 import { createBrowserHistory } from 'history';
 
 import {
-  STORE_ROUTER,
-  COUNT_ROUTER
+  COUNT_ROUTER,
+  STORE_ROUTER
 } from '@constants/stores';
 
-
-import { RouterStore } from './RouterStore';
 import { CountStore } from './CountStore';
+import { RouterStore } from './RouterStore';
 
 const history = createBrowserHistory();
 

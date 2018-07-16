@@ -1,10 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
+
 import { Provider } from 'mobx-react';
 
-import registerServiceWorker from './registerServiceWorker';
 import App from '@containers';
+import registerServiceWorker from './registerServiceWorker';
+
 import '@styles/index.less';
 
 import rootStores from '@stores';
