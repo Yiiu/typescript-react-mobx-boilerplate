@@ -2,9 +2,9 @@ const path = require('path')
 const fs = require('fs')
 const webpack = require('webpack')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const nodeModules = {};
-
 fs.readdirSync('node_modules')
     .filter(function(x) {
         return ['.bin'].indexOf(x) === -1;
@@ -18,13 +18,14 @@ module.exports = {
   entry: './src/server.tsx',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    modules: [path.resolve(__dirname), 'node_modules', 'app', 'app/redux'],
+    plugins: [
+      new TsconfigPathsPlugin()
+    ]
   },
   output: {
     path: path.resolve('./build/public'),
     filename: '../server.js',
-    publicPath: '/',
-    libraryTarget: 'commonjs2'
+    publicPath: '/'
   },
   externals: nodeModules,
   module: {
@@ -35,9 +36,9 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: [
-            '@babel/preset-typescript',
             '@babel/preset-env',
-            '@babel/preset-react'
+            '@babel/preset-react',
+            '@babel/preset-typescript',
           ],
           plugins: [
             // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
@@ -51,7 +52,7 @@ module.exports = {
   },
   plugins: [
     // new ForkTsCheckerWebpackPlugin(),
-    new webpack.NamedModulesPlugin(),
+    // new webpack.NamedModulesPlugin(),
     // new HtmlWebpackPlugin(),
   ]
 }

@@ -9,15 +9,58 @@ import registerServiceWorker from './registerServiceWorker';
 
 import '@styles/index.less';
 
-import rootStores from '@stores';
+import { createStore, IStores } from '@stores';
 
-ReactDOM.render(
-  <Router>
-    <Provider { ...rootStores }>
-      <App />
-    </Provider>
-  </Router>
-  ,
-  document.getElementById('root') as HTMLElement
-);
+type TypeNodeModuleWithHotReload = NodeModule & {hot?: any};
+
+type TypeWindowWithStore = Window & {__STORE: IStores};
+
+const isDevelop = process.env.NODE_ENV === 'development';
+
+const windowWithStore = window as TypeWindowWithStore;
+
+const ReactHotLoader = isDevelop
+  ? require('react-hot-loader').AppContainer
+  : ({ children }: any) => React.Children.only(children);
+
+export const render = (Component: typeof App) => {
+  const store = (() => {
+    const oldStores = windowWithStore.__STORE;
+    if (oldStores) {
+      return oldStores;
+    } else {
+      const newStores = createStore();
+      if (isDevelop) {
+        windowWithStore.__STORE = newStores;
+      }
+      return newStores;
+    }
+  })();
+  ReactDOM.render(
+    <ReactHotLoader>
+      <Router>
+        <Provider { ...store }>
+          <App />
+        </Provider>
+      </Router>
+    </ReactHotLoader>
+    ,
+    document.getElementById('root') as HTMLElement
+  );
+};
+const moduleWithHotReload = module as TypeNodeModuleWithHotReload;
+
+if (moduleWithHotReload.hot) {
+  moduleWithHotReload.hot.accept(() => {
+    const {App: NewApp} = require('./containers/App.tsx');
+    render(NewApp);
+  });
+  // moduleWithHotReload.hot.accept('./stores', () => {
+  //   const data = require('./stores');
+  //   console.log(data);
+  // });
+}
+
+render(App);
+
 registerServiceWorker();

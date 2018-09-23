@@ -2,13 +2,15 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@routes/*": ["src/routes/*"],
-      "@containers": ["src/containers/App.tsx"],
-      "@styles/*": ["src/styles/*"],
-      "@constants/*": ["src/constants/*"],
-      "@stores": ["src/stores/index.ts"]
+      "@routes/*": ["src/app/routes/*"],
+      "@containers": ["src/app/containers/App.tsx"],
+      "@containers/*": ["src/app/containers/*"],
+      "@styles/*": ["src/app/styles/*"],
+      "@components/*": ["src/app/components/*"],
+      "@constants/*": ["src/app/constants/*"],
+      "@stores": ["src/app/stores/index.ts"],
+      "@test": ["src/test/index.ts"]
     },
-    "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",
     "lib": ["es6", "dom"],

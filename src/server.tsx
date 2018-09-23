@@ -1,6 +1,11 @@
 import * as express from 'express';
 import * as React from 'react';
+
+// import { Provider } from 'mobx-react';
+
 import { renderToString } from 'react-dom/server';
+
+import Html from '@containers/Html';
 
 import * as appConfig from '../config';
 
@@ -9,7 +14,9 @@ const app = express();
 app.get('*', (req, res) => {
   res.status(200).send(
     renderToString(
-      <div>sdfasdf</div>
+      <Html>
+        <div>sdfasdf</div>
+      </Html>
     )
   );
 });

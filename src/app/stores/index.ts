@@ -8,17 +8,23 @@ import {
 import { CountStore } from './CountStore';
 import { RouterStore } from './RouterStore';
 
-const history = createBrowserHistory();
+export const createStore = () => {
+  const history = createBrowserHistory();
 
-const routerStore = new RouterStore(history);
-const countStore = new CountStore();
+  const routerStore = new RouterStore(history);
+  const countStore = new CountStore();
 
-const rootStores = {
-  [STORE_ROUTER]: routerStore,
-  [COUNT_ROUTER]: countStore
+  return {
+    [STORE_ROUTER]: routerStore,
+    [COUNT_ROUTER]: countStore
+  };
 };
 
-export default rootStores;
+export interface IStores {
+  [STORE_ROUTER]: RouterStore;
+  [COUNT_ROUTER]: CountStore;
+}
+
 export {
   RouterStore,
   CountStore
