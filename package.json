@@ -12,9 +12,11 @@
     "@babel/preset-typescript": "^7.1.0",
     "@types/chalk": "^2.2.0",
     "@types/express": "^4.16.0",
+    "@types/react-helmet": "^5.0.7",
     "@types/react-router": "^4.0.28",
     "@types/react-router-dom": "^4.2.7",
     "@types/webpack": "^4.4.12",
+    "@types/webpack-dev-middleware": "^2.0.2",
     "add": "^2.0.6",
     "autoprefixer": "^9.1.5",
     "babel-jest": "^22.1.0",
@@ -22,12 +24,13 @@
     "babel-preset-react-app": "^3.1.1",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
     "chalk": "^2.4.1",
+    "child_process": "^1.0.2",
     "cross-env": "^5.2.0",
     "css-loader": "0.28.7",
     "dotenv": "4.0.0",
     "dotenv-expand": "4.2.0",
     "express": "^4.16.3",
-    "extract-text-webpack-plugin": "3.0.2",
+    "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^2.0.0",
     "fork-ts-checker-webpack-plugin": "^0.4.9",
     "fs": "^0.0.1-security",
@@ -36,6 +39,7 @@
     "jest": "22.4.2",
     "less": "^3.5.3",
     "less-loader": "^4.1.0",
+    "mini-css-extract-plugin": "^0.4.3",
     "mobx": "^5.0.3",
     "mobx-react": "^5.2.3",
     "mobx-react-router": "^4.0.4",
@@ -47,6 +51,7 @@
     "react": "^16.4.1",
     "react-dev-utils": "^6.0.0-next.2150693d",
     "react-dom": "^16.4.1",
+    "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.11",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
@@ -68,7 +73,7 @@
     "webpack": "^4.19.1",
     "webpack-dev-server": "^3.1.8",
     "webpack-hot-middleware": "^2.24.2",
-    "webpack-manifest-plugin": "1.3.2",
+    "webpack-manifest-plugin": "^2.0.4",
     "whatwg-fetch": "2.0.3",
     "yarn": "^1.9.4"
   },
@@ -76,6 +81,7 @@
     "clean": "rimraf build",
     "start": "npm run clean && webpack --config config/server.js && npm run start:server",
     "start:client": "npm run clean && node scripts/start.js",
+    "start:client:prod": "cross-env NODE_ENV=production webpack --config config/dev.js",
     "start:server": "node build/server.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
@@ -134,5 +140,9 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "browser": {
+    "fs": false,
+    "child_process": false
   }
 }

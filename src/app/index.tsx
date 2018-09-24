@@ -36,7 +36,7 @@ export const render = (Component: typeof App) => {
       return newStores;
     }
   })();
-  ReactDOM.render(
+  ReactDOM.hydrate(
     <ReactHotLoader>
       <Router>
         <Provider { ...store }>

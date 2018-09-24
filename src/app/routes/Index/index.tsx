@@ -14,7 +14,7 @@ export interface IndexProp {
 
 @inject(COUNT_ROUTER)
 @observer
-export default class App extends React.Component<IndexProp> {
+export default class App extends React.Component<any> {
   public render() {
     return (
       <div className={styles.App}>
@@ -23,7 +23,7 @@ export default class App extends React.Component<IndexProp> {
           <h1 className={styles['App-title']}>Welcome to React</h1>
         </header>
         <p className={styles['App-intro']}>
-          To get started, esssssfsfsfssssssdit <code>src/App.tsx</code> and save to reload.
+          To get started,  <code>src/App.tsx</code> and save to reload.
         </p>
         <div>{ this.props[COUNT_ROUTER].count }</div>
         <button onClick={this.props[COUNT_ROUTER].addCount}>+</button>
