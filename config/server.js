@@ -24,7 +24,7 @@ module.exports = {
   // context: path.resolve(__dirname, ''),
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    modules: [path.resolve(__dirname), 'node_modules'],
+    modules: [path.resolve(__dirname), 'node_modules', 'app'],
     plugins: [
       new TsconfigPathsPlugin(),
       // new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson])
@@ -33,7 +33,9 @@ module.exports = {
   output: {
     path: path.resolve('./build/public'),
     filename: '../server.js',
+    chunkFilename: 'static/js/[name].chunk.js',
     publicPath: '/public/',
+    libraryTarget: 'commonjs2'
     // devtoolModuleFilenameTemplate: info =>
     //   path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },

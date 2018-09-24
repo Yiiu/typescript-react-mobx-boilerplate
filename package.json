@@ -79,7 +79,7 @@
   },
   "scripts": {
     "clean": "rimraf build",
-    "start": "npm run clean && webpack --config config/server.js && npm run start:server",
+    "start": "npm run clean && webpack --config config/server.js && npm run start:server -s",
     "start:client": "npm run clean && node scripts/start.js",
     "start:client:prod": "cross-env NODE_ENV=production webpack --config config/dev.js",
     "start:server": "node build/server.js",

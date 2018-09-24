@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import { inject, observer } from 'mobx-react';
 
@@ -25,6 +26,7 @@ export default class App extends React.Component<any> {
         <p className={styles['App-intro']}>
           To get started,  <code>src/App.tsx</code> and save to reload.
         </p>
+        <Link to="/aaa">asdfsadf</Link>
         <div>{ this.props[COUNT_ROUTER].count }</div>
         <button onClick={this.props[COUNT_ROUTER].addCount}>+</button>
         <button onClick={this.props[COUNT_ROUTER].reduceCount}>-</button>

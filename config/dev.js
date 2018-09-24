@@ -25,11 +25,13 @@ const devMode = process.env.NODE_ENV !== 'production'
 const env = getClientEnvironment(publicUrl);
 module.exports = {
   mode: 'development',
-  entry: [
+  entry: {
     // require.resolve('react-dev-utils/webpackHotDevClient'),
-    'webpack-hot-middleware/client?reload=true',
-    paths.appIndexJs
-  ],
+    app: [
+      'webpack-hot-middleware/client?reload=true',
+      paths.appIndexJs
+    ]
+  },
   devtool: 'source-map',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -45,14 +47,12 @@ module.exports = {
     path: path.resolve('./build/public'),
     pathinfo: true,
     filename: 'static/js/bundle.js',
-    chunkFilename: 'static/js/[name].chunk.js',
+    // chunkFilename: 'static/js/[name].chunk.js',
     publicPath: publicPath,
     // devtoolModuleFilenameTemplate: info =>
     //   path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   module: {
-    strictExportPresence: true,
-
     rules: [
       {
         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
