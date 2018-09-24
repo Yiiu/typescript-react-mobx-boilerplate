@@ -13,6 +13,8 @@ import * as webpack from 'webpack';
 import * as webpackDevMiddleware from 'webpack-dev-middleware';
 import * as webpackConfig from '../config/dev';
 
+// import axios from 'axios';
+
 import App from '@containers';
 
 import { createStore } from '@stores';
@@ -30,6 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
       lazy: false,
       logLevel: 'info',
       stats: {colors: true},
+      writeToDisk: true,
       publicPath: webpackConfig.output.publicPath,
       noInfo: true
     } as any)
@@ -43,14 +46,15 @@ if (process.env.NODE_ENV !== 'production') {
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/static', express.static(path.join(__dirname, 'public/static')));
 
-app.get('*', (req, res) => {
+app.get('*', async (req, res) => {
   const newStores = createStore();
+  const Router = StaticRouter as any;
   const markup = renderToString(
-    <StaticRouter location={req.url}>
+    <Router location={req.url} content={{}}>
       <Provider { ...newStores }>
         <App/>
       </Provider>
-    </StaticRouter>
+    </Router>
   );
   res.status(200).send(
     renderToString(

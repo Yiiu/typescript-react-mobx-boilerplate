@@ -16,6 +16,9 @@ export interface IndexProp {
 @inject(COUNT_ROUTER)
 @observer
 export default class App extends React.Component<any> {
+  public componentDidMount() {
+    console.log(412412);
+  }
   public render() {
     return (
       <div className={styles.App}>
