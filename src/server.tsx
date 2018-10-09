@@ -32,7 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
       lazy: false,
       logLevel: 'info',
       stats: {colors: true},
-      writeToDisk: true,
+      // writeToDisk: true,
       publicPath: webpackConfig.output.publicPath,
       noInfo: true
     } as any)
