@@ -28,6 +28,7 @@ export default class Html extends React.PureComponent<IHtmlProps> {
         </head>
         <body {...bodyAttrs}>
           <div id="root" dangerouslySetInnerHTML={{__html: markup}} />
+          <script src="/public/static/js/bundle.js" />
           {
             js.map(v => (
               <script key={v} src={v} />
