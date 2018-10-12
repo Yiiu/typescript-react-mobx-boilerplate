@@ -42,9 +42,9 @@ module.exports = {
       {
         test: /\.css|less$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-          },
+          // {
+          //   loader: MiniCssExtractPlugin.loader : require.resolve('style-loader'),
+          // },
           {
             loader: require.resolve('css-loader'),
             options: {
