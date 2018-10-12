@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import * as React from 'react';
 import { StaticRouter } from 'react-router';
 
@@ -10,19 +10,17 @@ import Html from '@containers/Html';
 
 import { createStore } from '@stores';
 
-export default (req: Request, res: Response) => {
+export default (req: Request) => {
   const newStores = createStore();
   const Router = StaticRouter as any;
   const markup = renderToString(
     <Router location={req.url} content={{}}>
       <Provider { ...newStores }>
-        <App/>
+        <App />
       </Provider>
     </Router>
   );
-  res.status(200).send(
-    renderToString(
-      <Html markup={markup} />
-    )
+  return renderToString(
+    <Html markup={markup} />
   );
 };

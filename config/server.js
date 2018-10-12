@@ -21,23 +21,26 @@ fs.readdirSync('node_modules')
 
 module.exports = {
   mode: 'development',
-  target: 'node',
-  entry: './src/server.tsx',
+  entry: './src/app/server.tsx',
+  devtool: 'source-map',
   // context: path.resolve(__dirname, ''),
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    modules: [path.resolve(__dirname), 'node_modules', 'app'],
+    // modules: [path.resolve(__dirname), 'node_modules', 'app'],
+    alias: {
+      'styles': paths.appStyles
+    },
     plugins: [
       new TsconfigPathsPlugin(),
       // new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson])
     ]
   },
   output: {
-    path: path.resolve('./build/public'),
-    filename: '../server.js',
+    path: path.resolve('./build/'),
+    filename: 'server/entry-server.js',
     chunkFilename: 'static/js/[name].chunk.js',
     publicPath: '/public/',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'commonjs'
     // devtoolModuleFilenameTemplate: info =>
     //   path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
@@ -47,17 +50,9 @@ module.exports = {
     new ForkTsCheckerWebpackPlugin(),
     new webpack.NamedModulesPlugin(),
     new MiniCssExtractPlugin({
-      filename: "[name].css",
+      filename: "static/css/[name].css",
       chunkFilename: "[id].css"
     })
     // new HtmlWebpackPlugin(),
-  ],
-  node: {
-    console: false,
-    global: false,
-    process: false,
-    Buffer: false,
-    __filename: false,
-    __dirname: false
-  }
+  ]
 }

@@ -5,18 +5,24 @@ import * as path from 'path';
 import * as appConfig from '../config';
 import serverRender from './serverRender';
 
-const app = express();
-let render;
-if (process.env.NODE_ENV !== 'production') {
-  render = serverRender({app});
+interface IServerApp {
+  default: (req: express.Request) => any;
 }
 
+const app = express();
+let render;
+let serverApp: IServerApp;
+if (process.env.NODE_ENV !== 'production') {
+  render = serverRender({app}, (server) => {
+    serverApp = server;
+  });
+}
 // app.use(favicon(path.join(__dirname, "public/favicon.ico")));
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/static', express.static(path.join(__dirname, 'public/static')));
-
-app.get('*', async (req, res) => {
+app.use('/public', express.static(path.join(__dirname, '../build')));
+app.use('/static', express.static(path.join(__dirname, '../build/static')));
+app.get('*', (req, res) => {
+  res.send(serverApp.default(req));
   // const newStores = createStore();
   // const Router = StaticRouter as any;
   // const markup = renderToString(
@@ -32,6 +38,7 @@ app.get('*', async (req, res) => {
   //   )
   // );
 });
+
 if (render) {
   render.then(() => {
     app.listen(appConfig.port as any, appConfig.host, (err: any) => {
