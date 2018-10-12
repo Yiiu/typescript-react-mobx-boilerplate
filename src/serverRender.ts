@@ -1,4 +1,6 @@
-// import * as path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as requireFromString from 'require-from-string';
 import * as webpack from 'webpack';
 import * as webpackDevMiddleware from 'webpack-dev-middleware';
 
@@ -7,9 +9,9 @@ import * as serverWebpackConfig from '../config/server';
 
 import { Express } from 'express';
 
-// const serverReadFile = (fs: MFS, fileName: string) => {
-//   return fs.readFileSync(path.join(serverWebpackConfig.output.path, fileName), 'utf-8');
-// };
+const serverReadFile = (fileName: string) => {
+  return fs.readFileSync(path.join(serverWebpackConfig.output.path, '/server', fileName), 'utf-8');
+};
 
 interface IConfig {
   app: Express;
@@ -30,7 +32,7 @@ export default ({ app }: IConfig, cb: Callback<any>): Promise<{}> => {
   app.use(
     webpackDevMiddleware(webpackCompiler, {
       writeToDisk: true,
-      // logLevel: 'silent',
+      logLevel: 'silent',
       publicPath: webpackConfig.output.publicPath
     })
   );
@@ -58,8 +60,9 @@ export default ({ app }: IConfig, cb: Callback<any>): Promise<{}> => {
       console.error(info.errors);
       return;
     }
-    serverEntry = require('../build/server/entry-server');
-    // console.log(serverEntry);
+    const bundle = serverReadFile('entry-server.js');
+    const m = requireFromString(bundle, 'entry-server.js');
+    serverEntry = m;
     onOk();
     renderResolve();
   });

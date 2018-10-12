@@ -19,11 +19,11 @@ export default class Html extends React.PureComponent<IHtmlProps> {
           {helmet.meta.toComponent()}
           {helmet.link.toComponent()}
           <title>Isomorphic Redux Example</title>
-          <link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+          <link rel="stylesheet" type="text/css" href="/public/static/css/main.css" />
         </head>
         <body {...bodyAttrs}>
           <div id="root" dangerouslySetInnerHTML={{__html: markup}} />
-          <script src="/static/js/bundle.js" />
+          <script src="/public/static/js/bundle.js" />
         </body>
       </html>
     );

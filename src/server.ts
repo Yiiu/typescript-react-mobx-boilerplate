@@ -5,6 +5,8 @@ import * as path from 'path';
 import * as appConfig from '../config';
 import serverRender from './serverRender';
 
+import * as config from '../config/index';
+
 interface IServerApp {
   default: (req: express.Request) => any;
 }
@@ -19,8 +21,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 // app.use(favicon(path.join(__dirname, "public/favicon.ico")));
 
-app.use('/public', express.static(path.join(__dirname, '../build')));
-app.use('/static', express.static(path.join(__dirname, '../build/static')));
+app.use('/public', express.static(path.join(__dirname, '../', config.clientBuild)));
+
 app.get('*', (req, res) => {
   res.send(serverApp.default(req));
   // const newStores = createStore();

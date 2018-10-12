@@ -36,9 +36,8 @@ module.exports = {
     ]
   },
   output: {
-    path: path.resolve('./build/'),
+    path: path.resolve(`./${paths.appBuild}/`),
     filename: 'server/entry-server.js',
-    chunkFilename: 'static/js/[name].chunk.js',
     publicPath: '/public/',
     libraryTarget: 'commonjs'
     // devtoolModuleFilenameTemplate: info =>
@@ -50,7 +49,7 @@ module.exports = {
     new ForkTsCheckerWebpackPlugin(),
     new webpack.NamedModulesPlugin(),
     new MiniCssExtractPlugin({
-      filename: "static/css/[name].css",
+      filename: "client/static/css/[name].css",
       chunkFilename: "[id].css"
     })
     // new HtmlWebpackPlugin(),

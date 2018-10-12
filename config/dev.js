@@ -45,10 +45,10 @@ module.exports = {
     ]
   },
   output: {
-    path: path.resolve('./build'),
+    path: path.resolve(`./${paths.appBuild}/client`),
     pathinfo: true,
     filename: 'static/js/bundle.js',
-    // chunkFilename: 'static/js/[name].chunk.js',
+    chunkFilename: 'static/js/[name].chunk.js',
     publicPath: publicPath,
     // devtoolModuleFilenameTemplate: info =>
     //   path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
