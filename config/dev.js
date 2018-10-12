@@ -14,6 +14,9 @@ const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware')
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin;
 
 const baseConfig = require('./base')
 
@@ -55,6 +58,7 @@ module.exports = {
   },
   module: baseConfig.module(false),
   plugins: [
+    // new CleanWebpackPlugin(['./__server'], { root: process.cwd() }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.appHtml,
@@ -62,16 +66,16 @@ module.exports = {
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
     new webpack.NamedModulesPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new ManifestPlugin({
-      fileName: './manifest.json'
-    }),
     // new webpack.HotModuleReplacementPlugin(),
     new ForkTsCheckerWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new MiniCssExtractPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css"
-    })
+    }),
+    new ReactLoadablePlugin({
+      filename: 'react-loadable.json',
+    }),
     // new webpack.NamedModulesPlugin(),
     // new HtmlWebpackPlugin(),
   ]

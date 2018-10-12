@@ -8,6 +8,8 @@ const paths = require('./paths');
 const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin;
+
 const baseConfig = require('./base')
 
 const nodeModules = {};
@@ -23,6 +25,7 @@ module.exports = {
   mode: 'development',
   entry: './src/app/server.tsx',
   devtool: 'source-map',
+  target: 'node',
   // context: path.resolve(__dirname, ''),
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -36,10 +39,11 @@ module.exports = {
     ]
   },
   output: {
-    path: path.resolve(`./${paths.appBuild}/`),
-    filename: 'server/entry-server.js',
+    path: path.resolve(`./${paths.appBuild}/server`),
+    filename: 'entry-server.js',
     publicPath: '/public/',
-    libraryTarget: 'commonjs'
+    libraryTarget: 'commonjs',
+    chunkFilename: '[name].chunk.js'
     // devtoolModuleFilenameTemplate: info =>
     //   path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
@@ -51,6 +55,9 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "client/static/css/[name].css",
       chunkFilename: "[id].css"
+    }),
+    new ReactLoadablePlugin({
+      filename: path.join(__dirname, '..', paths.appBuild, 'react-loadable.json'),
     })
     // new HtmlWebpackPlugin(),
   ]

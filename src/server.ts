@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as Loadable from 'react-loadable';
 
 import * as path from 'path';
 
@@ -8,7 +9,7 @@ import serverRender from './serverRender';
 import * as config from '../config/index';
 
 interface IServerApp {
-  default: (req: express.Request) => any;
+  default: (req: express.Request, stats: any) => any;
 }
 
 const app = express();
@@ -24,7 +25,8 @@ if (process.env.NODE_ENV !== 'production') {
 app.use('/public', express.static(path.join(__dirname, '../', config.clientBuild)));
 
 app.get('*', (req, res) => {
-  res.send(serverApp.default(req));
+  const stats = require('../__server/react-loadable.json');
+  res.send(serverApp.default(req, stats));
   // const newStores = createStore();
   // const Router = StaticRouter as any;
   // const markup = renderToString(
@@ -43,12 +45,14 @@ app.get('*', (req, res) => {
 
 if (render) {
   render.then(() => {
-    app.listen(appConfig.port as any, appConfig.host, (err: any) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.info(`\n\n 💂  Listening at http://${appConfig.host}:${appConfig.port}\n`);
-      }
+    Loadable.preloadAll().then(() => {
+      app.listen(appConfig.port as any, appConfig.host, (err: any) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.info(`\n\n 💂  Listening at http://${appConfig.host}:${appConfig.port}\n`);
+        }
+      });
     });
   });
 }

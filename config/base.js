@@ -27,6 +27,10 @@ module.exports = {
             options: {
               plugins: [
                 'react-hot-loader/babel',
+                'syntax-dynamic-import',
+                'transform-class-properties',
+                'transform-object-assign',
+                'react-loadable/babel'
               ]
             }
           },
@@ -39,7 +43,7 @@ module.exports = {
         test: /\.css|less$/,
         use: [
           {
-            loader: isServer ? MiniCssExtractPlugin.loader : require.resolve('style-loader'),
+            loader: MiniCssExtractPlugin.loader,
           },
           {
             loader: require.resolve('css-loader'),
@@ -81,7 +85,7 @@ module.exports = {
         exclude: [/\.(js|jsx|mjs|tsx?)$/, /\.html$/, /\.json$/, /\.css|less$/],
         loader: require.resolve('file-loader'),
         options: {
-          name: 'static/media/[name].[hash:8].[ext]',
+          name: './static/media/[name].[hash:8].[ext]',
         },
       },
     ]

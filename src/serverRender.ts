@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as requireFromString from 'require-from-string';
+// import * as fs from 'fs';
+// import * as path from 'path';
+// import * as requireFromString from 'require-from-string';
 import * as webpack from 'webpack';
 import * as webpackDevMiddleware from 'webpack-dev-middleware';
 
@@ -9,9 +9,9 @@ import * as serverWebpackConfig from '../config/server';
 
 import { Express } from 'express';
 
-const serverReadFile = (fileName: string) => {
-  return fs.readFileSync(path.join(serverWebpackConfig.output.path, '/server', fileName), 'utf-8');
-};
+// const serverReadFile = (fileName: string) => {
+//   return fs.readFileSync(path.join(serverWebpackConfig.output.path, '/server', fileName), 'utf-8');
+// };
 
 interface IConfig {
   app: Express;
@@ -36,6 +36,7 @@ export default ({ app }: IConfig, cb: Callback<any>): Promise<{}> => {
       publicPath: webpackConfig.output.publicPath
     })
   );
+  app.use(require('webpack-hot-middleware')(webpackCompiler));
   // webpackCompiler.hooks.done.tapAsync('done', stats => {
   //   const info = stats.toJson();
   //   if (stats.hasWarnings()) {
@@ -53,20 +54,19 @@ export default ({ app }: IConfig, cb: Callback<any>): Promise<{}> => {
   serverCompiler.watch({}, (err, stats) => {
     const info = stats.toJson();
     if (stats.hasWarnings()) {
-      console.warn(info.warnings);
+      console.warn(123123, info.warnings);
     }
 
     if (stats.hasErrors()) {
       console.error(info.errors);
       return;
     }
-    const bundle = serverReadFile('entry-server.js');
-    const m = requireFromString(bundle, 'entry-server.js');
-    serverEntry = m;
+    // const bundle = serverReadFile('entry-server.js');
+    // const m = requireFromString(bundle, 'entry-server.js');
+    serverEntry = require('../__server/server/entry-server');
     onOk();
     renderResolve();
   });
 
-  app.use(require('webpack-hot-middleware')(webpackCompiler));
   return promise;
 };
