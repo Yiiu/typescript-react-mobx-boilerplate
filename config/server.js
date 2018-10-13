@@ -7,6 +7,7 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const paths = require('./paths');
 const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const merge = require('webpack-merge');
 
 const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin;
 
@@ -21,7 +22,7 @@ fs.readdirSync('node_modules')
         nodeModules[mod] = 'commonjs ' + mod;
     });
 
-module.exports = {
+module.exports = merge(baseConfig, {
   mode: 'development',
   entry: './src/app/server.tsx',
   devtool: 'source-map',
@@ -48,17 +49,62 @@ module.exports = {
     //   path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   externals: nodeModules,
-  module: baseConfig.module(true),
+  module: {
+    rules: [
+      {
+        test: /\.css|less$/,
+        use: [
+          // {
+          //   loader: MiniCssExtractPlugin.loader
+          // },
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              importLoaders: 1,
+              modules: true,
+              localIdentName: '[local]_[hash:base64:8]'
+            },
+          },
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {
+              // Necessary for external CSS imports to work
+              // https://github.com/facebookincubator/create-react-app/issues/2677
+              ident: 'postcss',
+              plugins: () => [
+                require('postcss-flexbugs-fixes'),
+                autoprefixer({
+                  browsers: [
+                    '>1%',
+                    'last 4 versions',
+                    'Firefox ESR',
+                    'not ie < 9', // React doesn't support IE8 anyway
+                  ],
+                  flexbox: 'no-2009',
+                }),
+              ],
+            },
+          },
+          {
+            loader: require.resolve('less-loader'),
+            // options: {
+            //   modifyVars: theme
+            // }
+          }
+        ]
+      },
+    ],
+  },
   plugins: [
-    new ForkTsCheckerWebpackPlugin(),
+    // new ForkTsCheckerWebpackPlugin(),
     new webpack.NamedModulesPlugin(),
-    new MiniCssExtractPlugin({
-      filename: "client/static/css/[name].css",
-      chunkFilename: "[id].css"
-    }),
+    // new MiniCssExtractPlugin({
+    //   filename: "../client/static/css/[name].css",
+    //   chunkFilename: "[id].css"
+    // }),
     new ReactLoadablePlugin({
       filename: path.join(__dirname, '..', paths.appBuild, 'react-loadable.json'),
     })
     // new HtmlWebpackPlugin(),
   ]
-}
+})

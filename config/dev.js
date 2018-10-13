@@ -7,6 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
@@ -15,6 +16,7 @@ const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMi
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const merge = require('webpack-merge');
 
 const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin;
 
@@ -27,7 +29,7 @@ const publicUrl = '';
 const devMode = process.env.NODE_ENV !== 'production'
 
 const env = getClientEnvironment(publicUrl);
-module.exports = {
+module.exports = merge(baseConfig, {
   mode: 'development',
   entry: {
     // require.resolve('react-dev-utils/webpackHotDevClient'),
@@ -56,7 +58,56 @@ module.exports = {
     // devtoolModuleFilenameTemplate: info =>
     //   path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
-  module: baseConfig.module(false),
+  module: {
+    rules: [
+
+      {
+        test: /\.css|less$/,
+        use: [
+          {
+            loader: require.resolve('extracted-loader')
+          },
+          {
+            loader: MiniCssExtractPlugin.loader,
+          },
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              importLoaders: 1,
+              modules: true,
+              localIdentName: '[local]_[hash:base64:8]'
+            },
+          },
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {
+              // Necessary for external CSS imports to work
+              // https://github.com/facebookincubator/create-react-app/issues/2677
+              ident: 'postcss',
+              plugins: () => [
+                require('postcss-flexbugs-fixes'),
+                autoprefixer({
+                  browsers: [
+                    '>1%',
+                    'last 4 versions',
+                    'Firefox ESR',
+                    'not ie < 9', // React doesn't support IE8 anyway
+                  ],
+                  flexbox: 'no-2009',
+                }),
+              ],
+            },
+          },
+          {
+            loader: require.resolve('less-loader'),
+            // options: {
+            //   modifyVars: theme
+            // }
+          }
+        ],
+      },
+    ]
+  },
   plugins: [
     // new CleanWebpackPlugin(['./__server'], { root: process.cwd() }),
     new HtmlWebpackPlugin({
@@ -67,7 +118,7 @@ module.exports = {
     new webpack.NamedModulesPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // new webpack.HotModuleReplacementPlugin(),
-    new ForkTsCheckerWebpackPlugin(),
+    // new ForkTsCheckerWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new MiniCssExtractPlugin({
       filename: "[name].css",
@@ -76,7 +127,8 @@ module.exports = {
     new ReactLoadablePlugin({
       filename: 'react-loadable.json',
     }),
+    new FriendlyErrorsWebpackPlugin()
     // new webpack.NamedModulesPlugin(),
     // new HtmlWebpackPlugin(),
   ]
-}
+})

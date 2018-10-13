@@ -4,13 +4,13 @@ import { Route, Switch } from 'react-router-dom';
 
 const Index = Loadable({
   loader: () => import(/* webpackChunkName: "router_index" */'./Index/index'),
-  loading: () => <div>loading</div>,
+  loading: () => null,
   modules: ['./Index/index'],
   // webpack: () => [(require as any).resolveWeak('./Index/index')],
 });
 const Test = Loadable({
   loader: () => import(/* webpackChunkName: "router_test" */'./Test/index'),
-  loading: () => <div>loading</div>,
+  loading: () => null,
   modules: ['./Index/index']
 });
 

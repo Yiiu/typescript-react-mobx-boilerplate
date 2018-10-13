@@ -36,7 +36,9 @@ export default ({ app }: IConfig, cb: Callback<any>): Promise<{}> => {
       publicPath: webpackConfig.output.publicPath
     })
   );
-  app.use(require('webpack-hot-middleware')(webpackCompiler));
+  app.use(require('webpack-hot-middleware')(webpackCompiler, {
+    log: false,
+  }));
   // webpackCompiler.hooks.done.tapAsync('done', stats => {
   //   const info = stats.toJson();
   //   if (stats.hasWarnings()) {
