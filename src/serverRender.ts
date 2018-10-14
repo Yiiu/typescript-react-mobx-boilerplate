@@ -1,74 +1,69 @@
 // import * as fs from 'fs';
-// import * as path from 'path';
+import * as path from 'path';
 // import * as requireFromString from 'require-from-string';
+import * as rimraf from 'rimraf';
 import * as webpack from 'webpack';
-import * as webpackDevMiddleware from 'webpack-dev-middleware';
+import * as WebpackDevMiddleware from 'webpack-dev-middleware';
+import * as WebpackHotMiddleware from 'webpack-hot-middleware';
 
-import * as webpackConfig from '../config/dev';
-import * as serverWebpackConfig from '../config/server';
+import webpackConfigs from '../config/webpack/index';
 
 import { Express } from 'express';
 
-// const serverReadFile = (fileName: string) => {
-//   return fs.readFileSync(path.join(serverWebpackConfig.output.path, '/server', fileName), 'utf-8');
-// };
+const rm = async (url: string) => {
+  return new Promise((resolve) => {
+    rimraf(path.join(__dirname, url), () => {
+      resolve();
+    });
+  });
+};
 
 interface IConfig {
   app: Express;
+  isServer: boolean;
 }
 
-type Callback<T> = (T: any) => any;
+// type Callback<T> = (T: any) => any;
 
-export default ({ app }: IConfig, cb: Callback<any>): Promise<{}> => {
-  let renderResolve = () => {};
-  let serverEntry: any;
-  const promise = new Promise((resolve, reject) => renderResolve = resolve);
-  const webpackCompiler = webpack(webpackConfig as any);
-  const onOk = () => {
-    if (serverEntry) {
-      cb(serverEntry);
-    }
-  };
-  app.use(
-    webpackDevMiddleware(webpackCompiler, {
-      writeToDisk: true,
-      logLevel: 'silent',
-      publicPath: webpackConfig.output.publicPath
-    })
-  );
-  app.use(require('webpack-hot-middleware')(webpackCompiler, {
-    log: false,
-  }));
-  // webpackCompiler.hooks.done.tapAsync('done', stats => {
-  //   const info = stats.toJson();
-  //   if (stats.hasWarnings()) {
-  //     console.warn(info.warnings);
-  //   }
+export default class ServerRender {
+  public webpackDevMiddleware?: any;
+  public webpackHotMiddleware?: any;
+  public clientConfig = webpackConfigs({dev: true, isServer: false}) as any;
+  public serverConfig = webpackConfigs({dev: true, isServer: true}) as any;
+  public config: IConfig;
 
-  //   if (stats.hasErrors()) {
-  //     console.error(info.errors);
-  //     return;
-  //   }
-  //   onOk();
-  //   renderResolve();
-  // });
-  const serverCompiler = webpack(serverWebpackConfig as any);
-  serverCompiler.watch({}, (err, stats) => {
-    const info = stats.toJson();
-    if (stats.hasWarnings()) {
-      console.warn(123123, info.warnings);
-    }
-
-    if (stats.hasErrors()) {
-      console.error(info.errors);
-      return;
-    }
-    // const bundle = serverReadFile('entry-server.js');
-    // const m = requireFromString(bundle, 'entry-server.js');
-    serverEntry = require('../__server/server/entry-server');
-    onOk();
-    renderResolve();
-  });
-
-  return promise;
-};
+  constructor(options: IConfig) {
+    this.config = options;
+  }
+  public run = async () => {
+    const configs = [
+      this.clientConfig,
+      this.serverConfig
+    ];
+    await this.clear();
+    console.info('clean done!');
+    const multiCompiler = webpack(configs as any) as any;
+    await this.buildTools(multiCompiler);
+  }
+  public buildTools = (multiCompiler: any) => {
+    const webpackDevMiddlewareConfig = {
+      publicPath: `/_next/static/webpack`,
+      noInfo: true,
+      logLevel: 'silent'
+    };
+    multiCompiler.
+    this.webpackDevMiddleware = WebpackDevMiddleware(multiCompiler, webpackDevMiddlewareConfig);
+    this.webpackHotMiddleware = WebpackHotMiddleware(multiCompiler.compilers[0], {
+      log: false,
+      heartbeat: 2500
+    });
+    this.config.app.use(this.webpackDevMiddleware);
+    this.config.app.use(this.webpackHotMiddleware);
+    this.config.app.render = () => {
+      console.log(4214124124);
+    };
+  }
+  public clear = async () => {
+    await rm('../__server');
+  }
+}

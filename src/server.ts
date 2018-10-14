@@ -3,42 +3,34 @@ import * as Loadable from 'react-loadable';
 
 import * as path from 'path';
 
-import * as appConfig from '../config';
-import serverRender from './serverRender';
+import ServerRender from './serverRender';
 
-import * as config from '../config/index';
-
-interface IServerApp {
-  default: (req: express.Request, stats: any) => any;
-}
+import config from '../config/index';
 
 const app = express();
-let render;
-let serverApp: IServerApp;
-if (process.env.NODE_ENV !== 'production') {
-  render = serverRender({app}, (server) => {
-    serverApp = server;
-  });
-}
+
+const serverRender = new ServerRender({
+  isServer: true,
+  app
+});
+
 // app.use(favicon(path.join(__dirname, "public/favicon.ico")));
 
 app.use('/public', express.static(path.join(__dirname, '../', config.clientBuild)));
 
 app.get('*', (req, res) => {
-  const stats = require('../__server/react-loadable.json');
-  res.send(serverApp.default(req, stats));
+  // const stats = require('../__server/react-loadable.json');
+  // res.send(serverApp.default(req, stats));
 });
 
-if (render) {
-  render.then(() => {
-    Loadable.preloadAll().then(() => {
-      app.listen(appConfig.port as any, appConfig.host, (err: any) => {
-        if (err) {
-          console.error(err);
-        } else {
-          console.info(`\n\n 💂  Listening at http://${appConfig.host}:${appConfig.port}\n`);
-        }
-      });
+serverRender.run().then(() => {
+  Loadable.preloadAll().then(() => {
+    app.listen(config.port as any, config.host, (err: any) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.info(`\n\n 💂  Listening at http://${config.host}:${config.port}\n`);
+      }
     });
   });
-}
+});

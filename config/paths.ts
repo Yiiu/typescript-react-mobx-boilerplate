@@ -1,12 +1,11 @@
-const path = require('path');
-const fs = require('fs');
-const url = require('url');
-const config = require('./index');
+import * as fs from 'fs';
+import * as path from 'path';
+import config from './index';
 
 const appDirectory = fs.realpathSync(process.cwd());
-const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
+const resolveApp = (relativePath: string) => path.resolve(appDirectory, relativePath);
 
-module.exports = {
+export default {
   dotenv: resolveApp('.env'),
   appSrc: resolveApp('src'),
   appPackageJson: resolveApp('package.json'),
@@ -16,5 +15,7 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   appStyles: resolveApp('src/app/styles'),
   appBuild: config.build,
+  appBuildSrc: resolveApp(config.build),
+  appTsconfig: resolveApp('tsconfig.json'),
   appBuildClient: resolveApp(config.clientBuild)
-}
+};
