@@ -4,11 +4,11 @@ import * as path from 'path';
 import * as rimraf from 'rimraf';
 import * as webpack from 'webpack';
 import * as WebpackDevMiddleware from 'webpack-dev-middleware';
-import * as WebpackHotMiddleware from 'webpack-hot-middleware';
+// import * as WebpackHotMiddleware from 'webpack-hot-middleware';
 
 import webpackConfigs from '../config/webpack/index';
 
-import { Express } from 'express';
+import { Express, Request } from 'express';
 
 const rm = async (url: string) => {
   return new Promise((resolve) => {
@@ -43,25 +43,43 @@ export default class ServerRender {
     await this.clear();
     console.info('clean done!');
     const multiCompiler = webpack(configs as any) as any;
-    await this.buildTools(multiCompiler);
+    return await this.buildTools(multiCompiler);
   }
-  public buildTools = (multiCompiler: any) => {
+  public buildTools = async (multiCompiler: any) => {
     const webpackDevMiddlewareConfig = {
       publicPath: `/_next/static/webpack`,
       noInfo: true,
       logLevel: 'silent'
     };
-    multiCompiler.
-    this.webpackDevMiddleware = WebpackDevMiddleware(multiCompiler, webpackDevMiddlewareConfig);
-    this.webpackHotMiddleware = WebpackHotMiddleware(multiCompiler.compilers[0], {
-      log: false,
-      heartbeat: 2500
+    let resolve!: () => any;
+    const promises = new Promise((res) => resolve = res);
+    let isOk = -1;
+    multiCompiler.compilers[0].hooks.done.tap('client', () => {
+      if (isOk === 0) {
+        resolve();
+      } else {
+        isOk++;
+      }
     });
-    this.config.app.use(this.webpackDevMiddleware);
-    this.config.app.use(this.webpackHotMiddleware);
-    this.config.app.render = () => {
-      console.log(4214124124);
-    };
+    multiCompiler.compilers[1].hooks.done.tap('server', () => {
+      if (isOk === 0) {
+        resolve();
+      } else {
+        isOk++;
+      }
+    });
+    // multiCompiler.
+    this.webpackDevMiddleware = WebpackDevMiddleware(multiCompiler, webpackDevMiddlewareConfig);
+    this.config.app.use(require('webpack-hot-middleware')(multiCompiler.compilers[0], {
+    }));
+    // this.config.app.use(this.webpackDevMiddleware);
+    // this.config.app.use(this.webpackHotMiddleware);
+    return promises;
+  }
+  public render = (req: Request) => {
+    const appRender = require('../__server/server/app').default;
+    const stats = require('../__server/react-loadable.json');
+    return appRender(req, stats);
   }
   public clear = async () => {
     await rm('../__server');

@@ -10,7 +10,7 @@ export interface IHtmlProps {
 
 export default class Html extends React.PureComponent<IHtmlProps> {
   public render() {
-    const { markup, js } = this.props;
+    const { markup, js, style } = this.props;
     const helmet = Helmet.renderStatic();
     const htmlAttrs = helmet.htmlAttributes.toComponent();
     const bodyAttrs = helmet.bodyAttributes.toComponent();
@@ -21,19 +21,19 @@ export default class Html extends React.PureComponent<IHtmlProps> {
           {helmet.meta.toComponent()}
           {helmet.link.toComponent()}
           {
-            js.map(v => (
+            style.map(v => (
               <link key={v} rel="stylesheet" type="text/css" href={v} />
             ))
           }
         </head>
         <body {...bodyAttrs}>
           <div id="root" dangerouslySetInnerHTML={{__html: markup}} />
-          <script src="/public/static/js/bundle.js" />
           {
             js.map(v => (
               <script key={v} src={v} />
             ))
           }
+          <script src="/public/static/chunks/app.js" />
         </body>
       </html>
     );

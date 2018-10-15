@@ -28,7 +28,9 @@ export default ({
   const webpackMode = dev ? 'development' : 'production';
 
   const entry = isServer ?
-    ['./src/app/server.tsx'] :
+    {
+      app: ['./src/app/server.tsx']
+    } :
     {
       app: [
         'webpack-hot-middleware/client?reload=true',
@@ -45,8 +47,9 @@ export default ({
     entry,
     output: {
       path: path.join(paths.appBuildSrc, isServer ? 'server' : ''),
-      filename: 'static/js/[name].js',
-      libraryTarget: 'commonjs2',
+      filename: isServer ? '[name].js' : 'static/chunks/app.js',
+      publicPath: '/public/',
+      libraryTarget: isServer ? 'commonjs2' : 'jsonp',
       hotUpdateChunkFilename: 'static/webpack/[id].[hash].hot-update.js',
       hotUpdateMainFilename: 'static/webpack/[hash].hot-update.json',
       chunkFilename: isServer ? '[name].[contenthash].js' : 'static/chunks/[name].[contenthash].js',

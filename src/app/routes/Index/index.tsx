@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 
 import { inject, observer } from 'mobx-react';
@@ -16,12 +17,13 @@ export interface IndexProp {
 @inject(COUNT_ROUTER)
 @observer
 export default class Index extends React.Component<any> {
-  public componentDidMount() {
-    console.log(412412);
-  }
   public render() {
     return (
       <div className={styles.App}>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>index</title>
+        </Helmet>
         <header className={styles['App-header']}>
           <img src={logo} className={styles['App-logo']} alt="logo" />
           <h1 className={styles['App-title']}>Welcomes to React</h1>

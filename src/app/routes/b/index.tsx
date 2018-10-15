@@ -6,9 +6,9 @@ export default () => {
     <div>
       <Helmet>
         <meta charSet="utf-8" />
-        <title>My Title</title>
+        <title>b</title>
       </Helmet>
-      <div>4214124</div>
+      <div>basdfsdfasdfasd</div>
     </div>
   );
 };

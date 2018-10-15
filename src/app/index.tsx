@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as Loadable from 'react-loadable';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import { Provider } from 'mobx-react';
@@ -36,17 +37,19 @@ export const render = (Component: typeof App) => {
       return newStores;
     }
   })();
-  ReactDOM.hydrate(
-    <ReactHotLoader>
-      <Router>
-        <Provider { ...store }>
-          <App />
-        </Provider>
-      </Router>
-    </ReactHotLoader>
-    ,
-    document.getElementById('root') as HTMLElement
-  );
+  Loadable.preloadReady().then(() => {
+    ReactDOM.hydrate(
+      <ReactHotLoader>
+        <Router>
+          <Provider { ...store }>
+            <App />
+          </Provider>
+        </Router>
+      </ReactHotLoader>
+      ,
+      document.getElementById('root') as HTMLElement
+    );
+  });
 };
 const moduleWithHotReload = module as TypeNodeModuleWithHotReload;
 
