@@ -31,7 +31,7 @@ export default class Index extends React.Component<any> {
         <p className={styles['App-intro']}>
           To get startessd,  <code>src/App.tsx</code> and save to reload.
         </p>
-        <Link to="/aaa">asd123</Link>
+        <Link to="/aaa">as124124d123</Link>
         <div>{ this.props[COUNT_ROUTER].count }</div>
         <button onClick={this.props[COUNT_ROUTER].addCount}>+</button>
         <button onClick={this.props[COUNT_ROUTER].reduceCount}>-</button>

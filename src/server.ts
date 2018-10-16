@@ -1,3 +1,6 @@
+
+import * as fs from 'fs';
+
 import * as express from 'express';
 import * as Loadable from 'react-loadable';
 import * as favicon from 'serve-favicon';
@@ -6,7 +9,8 @@ import * as path from 'path';
 
 let serverRender = require('./serverRender').default;
 
-import config from '../config/index';
+const appDirectory = fs.realpathSync(process.cwd());
+const resolveApp = (relativePath: string) => path.resolve(appDirectory, relativePath);
 
 const app = express();
 
@@ -26,17 +30,17 @@ if ((module as any).hot) {
 }
 
 Loadable.preloadAll().then(() => {
-  app.listen(config.port as any, config.host, (err: any) => {
+  app.listen(process.env.PORT as any, process.env.HOST as any, (err: any) => {
     if (err) {
       console.error(err);
     } else {
-      console.info(`\n\n 💂  Listening at http://${config.host}:${config.port}\n`);
+      console.info(`\n\n 💂  Listening at http://${process.env.HOST}:${process.env.PORT}\n`);
     }
   });
 });
 
-app.use(favicon(path.join(__dirname, '../../', 'public/favicon.ico')));
-app.use('/public', express.static(path.join(__dirname, '../')));
+app.use(favicon(path.join(resolveApp('public/favicon.ico'))));
+app.use('/public', express.static(resolveApp('__server')));
 app.get('*', async (req, res) => {
   res.send(await serverRender(req));
 });

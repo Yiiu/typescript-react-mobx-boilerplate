@@ -5,37 +5,66 @@ import * as webpack from 'webpack';
 
 import * as CaseSensitivePathPlugin from 'case-sensitive-paths-webpack-plugin';
 import * as FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { ReactLoadablePlugin } from 'react-loadable/webpack';
 import * as StartServerPlugin from 'start-server-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import * as merge from 'webpack-merge';
 import * as WebpackBar from 'webpackbar';
 import * as WriteFilePlugin from 'write-file-webpack-plugin';
+
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
+const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
+
+import { getEnv } from '../env';
 
 import paths from '../paths';
 
 import scriptLoader from './loader/script';
 import styleLoader from './loader/style';
 
+export interface IAppConfig {
+  configureWebpack?: any;
+  plugins?: any[];
+  hotPort?: string;
+  hotHost?: string;
+  port?: string;
+  host?: string;
+  modify?: <T>(webpackConfig: T, config: IConfig) => any;
+}
+
 export interface IConfig {
   dev: boolean;
   isServer: boolean;
 }
 
-export default ({
-  dev = false,
-  isServer = false,
-}: IConfig) => {
+export default (
+  {
+    dev = false,
+    isServer = false
+  }: IConfig,
+  {
+    plugins = [],
+    configureWebpack,
+    modify,
+  }: IAppConfig
+) => {
   const webpackMode = dev ? 'development' : 'production';
-
+  const dotenv = getEnv(isServer, {
+    plugins,
+    configureWebpack,
+    modify,
+  });
+  const hostPort = parseInt(dotenv.PORT, 10) + 1;
+  const publicPath = !process.env.SSR ? '/public/' : '/public/';
   const entry = isServer ?
     ['./src/server.ts'] :
     [
-        'webpack-hot-middleware/client?reload=true&path=http://localhost:3000/__webpack_hmr',
-        paths.appIndexJs
+      `webpack-hot-middleware/client?reload=true&path=http://${dotenv.HOST}:${hostPort}/__webpack_hmr`,
+      paths.appClientIndexJs
     ];
-
-  const webpackConfig = {
+  let webpackConfig = {
     mode: webpackMode,
     devtool: 'source-map',
     name: isServer ? 'server' : 'client',
@@ -45,7 +74,7 @@ export default ({
     output: {
       path: path.join(paths.appBuildSrc, isServer ? 'server' : ''),
       filename: isServer ? 'server.js' : 'static/chunks/app.js',
-      publicPath: '/public/',
+      publicPath,
       libraryTarget: isServer ? 'commonjs2' : 'jsonp',
       hotUpdateChunkFilename: 'static/webpack/[id].[hash].hot-update.js',
       hotUpdateMainFilename: 'static/webpack/[hash].hot-update.json',
@@ -86,6 +115,7 @@ export default ({
     },
     plugins: [
       // new AutoDllPlugin(),
+      new webpack.DefinePlugin(dotenv),
       isServer && new StartServerPlugin({
         name: 'server.js',
         nodeArgs: ['-r', 'source-map-support/register'],
@@ -112,6 +142,21 @@ export default ({
       }),
     ].filter(Boolean)
   };
+  if (dev) {
+    (webpack as any).devServer = {
+      compress: true,
+      host: dotenv.HOST,
+      port: hostPort,
+      watchOptions: {
+        ignored: /node_modules/,
+      },
+      contentBase: paths.appBuildSrc,
+      publicPath: '/__server',
+      before(app: any) {
+        app.use(errorOverlayMiddleware());
+      },
+    };
+  }
   if (isServer) {
     if (dev) {
       webpackConfig.entry.unshift('webpack/hot/poll?1000');
@@ -122,6 +167,21 @@ export default ({
       __dirname: false,
       __filename: false,
     };
+  }
+  if (process.env.SSR) {
+    webpackConfig.plugins.unshift(
+      new HtmlWebpackPlugin({
+        inject: true,
+        template: paths.appHtml,
+      }),
+    );
+    webpackConfig.plugins.unshift(
+      new InterpolateHtmlPlugin(HtmlWebpackPlugin, dotenv),
+    );
+  }
+  merge(configureWebpack, (webpackConfig as any));
+  if (modify) {
+    webpackConfig = modify<typeof webpackConfig>(webpackConfig, { isServer, dev });
   }
   return webpackConfig;
 };

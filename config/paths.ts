@@ -9,13 +9,15 @@ export default {
   dotenv: resolveApp('.env'),
   appSrc: resolveApp('src'),
   appPackageJson: resolveApp('package.json'),
-  appIndexJs: resolveApp('src/app/index.tsx'),
+  appClientIndexJs: resolveApp('src/app/index.tsx'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appNodeModules: resolveApp('node_modules'),
   appStyles: resolveApp('src/app/styles'),
   appBuild: config.build,
+  appBuildPublic: resolveApp(`${config.build}`),
   appBuildSrc: resolveApp(config.build),
   appTsconfig: resolveApp('tsconfig.json'),
-  appBuildClient: resolveApp(config.clientBuild)
+  appBuildClient: resolveApp(config.clientBuild),
+  appConfig: resolveApp('config.js')
 };
