@@ -12,15 +12,11 @@ const Indexs = Loadable({
 const Test = Loadable({
   loader: () => import('./Test/index'),
   loading: () => <div>testsLoading</div>,
-  modules: ['./Test/index'],
-  webpack: () => [(require as any).resolveWeak('./Test/index')],
 });
 
 const B = Loadable({
   loader: () => import('./b/index'),
   loading: () => <div>testsLoading</div>,
-  modules: ['./b/index'],
-  webpack: () => [(require as any).resolveWeak('./b/index')],
 });
 
 export default class App extends React.Component {

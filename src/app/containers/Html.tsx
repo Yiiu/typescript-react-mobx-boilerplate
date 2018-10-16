@@ -20,6 +20,7 @@ export default class Html extends React.PureComponent<IHtmlProps> {
           {helmet.title.toComponent()}
           {helmet.meta.toComponent()}
           {helmet.link.toComponent()}
+          <link rel="stylesheet" type="text/css" href="/public/static/style/main.css" />
           {
             style.map(v => (
               <link key={v} rel="stylesheet" type="text/css" href={v} />

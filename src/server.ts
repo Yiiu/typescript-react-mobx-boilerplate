@@ -4,14 +4,28 @@ import * as favicon from 'serve-favicon';
 
 import * as path from 'path';
 
-import ServerRender from './serverRender';
+let serverRender = require('./serverRender').default;
 
 import config from '../config/index';
 
 const app = express();
 
-Loadable.preloadAll()
-.then(e => {
+if ((module as any).hot) {
+  (module as any).hot.accept(() => {
+    console.log('🔁  HMR Reloading...');
+  });
+  (module as any).hot.accept('./serverRender', () => {
+    console.log('🔁  HMR Reloading `./serverRender`...');
+    try {
+      serverRender = require('./serverRender').default;
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  console.info('✅  Server-side HMR Enabled!');
+}
+
+Loadable.preloadAll().then(() => {
   app.listen(config.port as any, config.host, (err: any) => {
     if (err) {
       console.error(err);
@@ -20,21 +34,22 @@ Loadable.preloadAll()
     }
   });
 });
-(async () => {
-  const serverRender = new ServerRender({
-    isServer: true,
-    app
-  });
-  try {
-    await serverRender.run();
-  } catch (err) {
-    console.error(err);
-  }
-  app.use(favicon(path.join(__dirname, '../', 'public/favicon.ico')));
-  app.use('/public', express.static(path.join(__dirname, '../', config.build)));
-  app.get('*', (req, res) => {
-    const html = serverRender.render(req);
-    res.send(html);
-  });
 
-})();
+app.use(favicon(path.join(__dirname, '../../', 'public/favicon.ico')));
+app.use('/public', express.static(path.join(__dirname, '../')));
+app.get('*', async (req, res) => {
+  res.send(await serverRender(req));
+});
+
+// (async () => {
+//   const serverRender = new ServerRender({
+//     isServer: true,
+//     app
+//   });
+//   try {
+//     await serverRender.run();
+//   } catch (err) {
+//     console.error(err);
+//   }
+
+// })();

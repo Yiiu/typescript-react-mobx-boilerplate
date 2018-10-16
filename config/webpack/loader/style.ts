@@ -14,11 +14,11 @@ export default ({
       !isServer && {
         loader: require.resolve('extracted-loader')
       },
-      {
+      !isServer && {
         loader: MiniCssExtractPlugin.loader,
       },
       {
-        loader: require.resolve('css-loader'),
+        loader: require.resolve(`css-loader${isServer ? '/locals' : ''}`),
         options: {
           importLoaders: 1,
           modules: true,

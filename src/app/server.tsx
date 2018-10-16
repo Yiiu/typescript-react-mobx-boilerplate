@@ -16,18 +16,16 @@ export default (req: Request, stats: any) => {
   const modules: any[] = [];
   const newStores = createStore();
   const Router = StaticRouter as any;
-  console.log(req.url);
   const markup = renderToString(
     <Router location={req.url} context={{}}>
-      <Loadable.Capture report={moduleName => modules.push(moduleName)}>
-        <Provider { ...newStores }>
+      <Provider { ...newStores }>
+        <Loadable.Capture report={moduleName => modules.push(moduleName)}>
           <App />
-        </Provider>
-      </Loadable.Capture>
+        </Loadable.Capture>
+      </Provider>
     </Router>
   );
   const bundles = getBundles(stats, modules);
-  // console.log(bundles);
   const js = bundles
     .filter(bundle => bundle && bundle.file.endsWith('.js'))
     .map(bundle => {
