@@ -1,12 +1,14 @@
 
 import * as historyApiFallback from 'connect-history-api-fallback';
 import * as express from 'express';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 // import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
 import * as webpack from 'webpack';
 import * as WebpackDevMiddleware from 'webpack-dev-middleware';
 import webpackConfigs, { IAppConfig } from '../config/webpack/index';
+
+const openBrowser = require('react-dev-utils/openBrowser');
 const clearConsole = require('react-dev-utils/clearConsole');
 
 import paths from '../config/paths';
@@ -14,6 +16,7 @@ import paths from '../config/paths';
 const app = express();
 const main = async () => {
   let config: IAppConfig = {};
+  fs.emptyDirSync(paths.appBuild);
   if (await fs.existsSync(paths.appConfig)) {
     try {
       config = require(paths.appConfig);
@@ -23,11 +26,12 @@ const main = async () => {
       process.exit(1);
     }
   }
+  const defaultPort = process.env.SSR ? 3001 : 3000;
   const port = (
     process.env.PORT ?
-    (parseInt(process.env.PORT, 10) + 1) : (config.port || 3001)
+    (parseInt(process.env.PORT, 10) + (process.env.SSR ? 1 : 0)) : (config.port || defaultPort)
   );
-  const host = process.env.HOST ? process.env.HOST : (config.host || 3001);
+  const host = process.env.HOST ? process.env.HOST : (config.host || 'localhost');
   const DIST_DIR = path.join(paths.appBuildSrc);
   const clientConfig = webpackConfigs({
       dev: true,
@@ -55,9 +59,9 @@ const main = async () => {
   app.use(devMiddleware);
   app.use(express.static(DIST_DIR));
   app.listen(port, () => {
-    // if (openBrowser('http://localhost:3000')) {
-    //   console.log('The browser tab has been opened!');
-    // }
+    if (openBrowser('http://localhost:3000')) {
+      console.log('The browser tab has been opened!');
+    }
     console.log(`hot server ${host} at ${port}`);
   });
 };

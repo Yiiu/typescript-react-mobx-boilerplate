@@ -10,8 +10,8 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 
 import { IConfig } from '../index';
 
-export default (webpackConfig: any, { isServer, dev, ssr }: IConfig, dotenv: any) => {
-  const hostPort = parseInt(dotenv.raw.PORT, 10) + 1;
+export default (webpackConfig: any, { isServer, dev, ssr, clientIndexJs }: IConfig, dotenv: any) => {
+  const hostPort = parseInt(dotenv.raw.PORT, 10) + (ssr ? 1 : 0);
   if (!isServer) {
     if (dev) {
       webpackConfig.devServer = {
@@ -65,7 +65,7 @@ export default (webpackConfig: any, { isServer, dev, ssr }: IConfig, dotenv: any
     );
     webpackConfig.entry = [
       `webpack-hot-middleware/client?reload=true&path=http://${dotenv.raw.HOST}:${hostPort}/__webpack_hmr`,
-      paths.appClientIndexJs
+      clientIndexJs
     ];
   }
   return webpackConfig;

@@ -117,7 +117,8 @@
     "clean": "rimraf __server",
     "start": "nodemon scripts/start.ts",
     "start:server": "cross-env SSR=true nodemon scripts/start.ts",
-    "build": "node scripts/build.js"
+    "build": "ts-node --project tsconfig-server.json scripts/build.ts",
+    "build:server": "cross-env SSR=true ts-node --project tsconfig-server.json scripts/build.ts"
   },
   "devDependencies": {
     "@types/jest": "^23.1.4",

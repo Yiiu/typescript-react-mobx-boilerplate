@@ -36,23 +36,29 @@ export interface IConfig {
   dev: boolean;
   isServer: boolean;
   ssr?: boolean;
+  serverIndexJs?: string;
+  clientIndexJs?: string;
 }
 
 export default (
-  {
-    dev = false,
-    isServer = false,
-    ssr = !!process.env.SSR
-  }: IConfig,
+  baseConfig: IConfig,
   {
     plugins = [],
     configureWebpack,
     modify,
   }: IAppConfig
 ) => {
-  const webpackMode = dev ? 'development' : 'production';
+  const config = {
+    dev: false,
+    isServer: false,
+    ssr: !!process.env.SSR,
+    serverIndexJs: paths.appServerIndexJs,
+    clientIndexJs: paths.appClientIndexJs,
+    ...baseConfig
+  };
+  const webpackMode = config.dev ? 'development' : 'production';
   const publicPath = '/public/';
-  const dotenv = getEnv(isServer, {
+  const dotenv = getEnv(config.isServer, {
     plugins,
     configureWebpack,
     modify,
@@ -60,17 +66,17 @@ export default (
   let webpackConfig = {
     mode: webpackMode,
     devtool: 'source-map',
-    name: isServer ? 'server' : 'client',
-    target: isServer ? 'node' : 'web',
+    name: config.isServer ? 'server' : 'client',
+    target: config.isServer ? 'node' : 'web',
     cache: true,
     output: {
-      path: path.join(paths.appBuildSrc, isServer ? 'server' : ''),
-      filename: isServer ? 'server.js' : 'static/chunks/app.js',
+      path: path.join(paths.appBuildSrc, config.isServer ? 'server' : ''),
+      filename: config.isServer ? 'server.js' : 'static/chunks/app.js',
       publicPath,
-      libraryTarget: isServer ? 'commonjs2' : 'jsonp',
+      libraryTarget: config.isServer ? 'commonjs2' : 'jsonp',
       hotUpdateChunkFilename: 'static/webpack/[id].[hash].hot-update.js',
       hotUpdateMainFilename: 'static/webpack/[hash].hot-update.json',
-      chunkFilename: isServer ? '[name].[contenthash].js' : 'static/chunks/[name].[contenthash].js',
+      chunkFilename: config.isServer ? '[name].[contenthash].js' : 'static/chunks/[name].[contenthash].js',
     },
     // performance: {
     //   hints: false
@@ -94,8 +100,8 @@ export default (
           loader: 'tslint-loader',
           enforce: 'pre'
         },
-        styleLoader({isServer}),
-        scriptLoader({isServer}),
+        styleLoader({ isServer: config.isServer }),
+        scriptLoader({ isServer: config.isServer }),
         {
           exclude: [/\.(js|jsx|mjs|tsx?)$/, /\.html$/, /\.json$/, /\.css|less$/],
           loader: require.resolve('file-loader'),
@@ -110,12 +116,12 @@ export default (
       new webpack.DefinePlugin(dotenv.stringified),
       new webpack.NamedModulesPlugin(),
       new WebpackBar({
-        name: isServer ? 'server' : 'client'
+        name: config.isServer ? 'server' : 'client'
       }),
-      dev && new FriendlyErrorsWebpackPlugin(),
-      dev && new webpack.HotModuleReplacementPlugin(),
-      dev && new CaseSensitivePathPlugin(),
-      dev && !!process.env.SSR && new WriteFilePlugin({
+      config.dev && new FriendlyErrorsWebpackPlugin(),
+      config.dev && new webpack.HotModuleReplacementPlugin(),
+      config.dev && new CaseSensitivePathPlugin(),
+      config.dev && !!process.env.SSR && new WriteFilePlugin({
         exitOnErrors: false,
         log: false,
         // required not to cache removed files
@@ -127,12 +133,12 @@ export default (
   plugins.push(serverPlugins);
   plugins.forEach(plugin => {
     if (typeof(plugin) === 'function') {
-      webpackConfig = plugin(webpackConfig, { isServer, dev, ssr }, dotenv);
+      webpackConfig = plugin(webpackConfig, config, dotenv);
     }
   });
   merge(configureWebpack, (webpackConfig as any));
   if (modify) {
-    webpackConfig = modify<typeof webpackConfig>(webpackConfig, { isServer, dev, ssr }, dotenv);
+    webpackConfig = modify<typeof webpackConfig>(webpackConfig, config, dotenv);
   }
   return webpackConfig;
 };

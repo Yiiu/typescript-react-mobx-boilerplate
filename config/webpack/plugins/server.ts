@@ -4,20 +4,25 @@ import * as StartServerPlugin from 'start-server-webpack-plugin';
 
 import { IConfig } from '../index';
 
-export default (webpackConfig: any, { isServer, dev, ssr }: IConfig) => {
+export default (
+  webpackConfig: any,
+  { isServer, dev, serverIndexJs }: IConfig
+) => {
   if (isServer) {
-    webpackConfig.plugins.push(
-      new StartServerPlugin({
-        name: 'server.js',
-        nodeArgs: ['-r', 'source-map-support/register'],
-      })
-    );
+    if (dev) {
+      webpackConfig.plugins.push(
+        new StartServerPlugin({
+          name: 'server.js',
+          nodeArgs: ['-r', 'source-map-support/register'],
+        })
+      );
+    }
     webpackConfig.node = {
       __console: false,
       __dirname: false,
       __filename: false,
     };
-    webpackConfig.entry = ['./src/server.ts'];
+    webpackConfig.entry = [serverIndexJs];
     if (dev) {
       webpackConfig.entry.unshift('webpack/hot/poll?1000');
     }
