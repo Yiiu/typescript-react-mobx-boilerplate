@@ -8,22 +8,44 @@ if (!NODE_ENV) {
   );
 }
 
+const REACT_APP = /^REACT_APP_/i;
+
 export const getEnv = (isServer: boolean, options: IAppConfig, publicUrl: string) => {
-  const env = {
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    PORT: process.env.PORT || options.port || '3000',
-    HOST: process.env.HOST || options.host || 'localhost',
-    BUILD_TARGET: isServer ? 'server' : 'client',
-    CLIENT_PUBLIC_PATH: process.env.CLIENT_PUBLIC_PATH,
-    PUBLIC_URL: publicUrl,
-    APP_PUBLIC_DIR:
-      process.env.NODE_ENV === 'production'
-        ? paths.appBuildPublic
-        : paths.appPublic,
-  };
+  const raw = Object.keys(process.env)
+    .filter(key => REACT_APP.test(key))
+    .reduce(
+      (env, key) => {
+        env[key] = process.env[key];
+        return env;
+      },
+      {
+        NODE_ENV: process.env.NODE_ENV || 'development',
+        PORT: process.env.PORT || options.port || '3000',
+        HOST: process.env.HOST || options.host || 'localhost',
+        SSR: process.env.SSR,
+        BUILD_TARGET: isServer ? 'server' : 'client',
+        CLIENT_PUBLIC_PATH: process.env.CLIENT_PUBLIC_PATH,
+        PUBLIC_URL: publicUrl,
+        APP_PUBLIC_DIR:
+          process.env.NODE_ENV === 'production'
+            ? paths.appBuildPublic
+            : paths.appPublic,
+      }
+    );
   process.env = {
     ...process.env,
-    ...env
+    ...raw
   };
-  return env;
+  const stringified = {
+    'process.env': Object.keys(process.env).reduce((env, key) => {
+      env[key] = JSON.stringify(raw[key]);
+      return env;
+    }, {}),
+  };
+  return {
+    raw: {
+      ...process.env
+    },
+    stringified
+  };
 };

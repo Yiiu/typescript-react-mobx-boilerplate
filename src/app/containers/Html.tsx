@@ -14,6 +14,7 @@ export default class Html extends React.PureComponent<IHtmlProps> {
     const helmet = Helmet.renderStatic();
     const htmlAttrs = helmet.htmlAttributes.toComponent();
     const bodyAttrs = helmet.bodyAttributes.toComponent();
+    // const aaaa = require('/public/static/style/main.css')
     return (
       <html {...htmlAttrs}>
         <head>

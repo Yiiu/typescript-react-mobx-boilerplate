@@ -37,9 +37,15 @@ export const render = (Component: typeof App) => {
       return newStores;
     }
   })();
-  console.log(process);
+  let hydrate: ReactDOM.Renderer;
+  console.log(process.env);
+  if (process.env.SSR === undefined) {
+    hydrate = ReactDOM.render;
+  } else {
+    hydrate = ReactDOM.hydrate;
+  }
   Loadable.preloadReady().then(() => {
-    ReactDOM.hydrate(
+    hydrate(
       <ReactHotLoader>
         <Router>
           <Provider { ...store }>

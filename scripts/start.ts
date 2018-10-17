@@ -45,11 +45,6 @@ const main = async () => {
   }
   const multiCompiler = webpack(webpackConfig as any) as any;
 
-  // const webpackDevMiddlewareConfig = {
-  //   publicPath: `/__server/static/webpack`,
-  //   noInfo: true,
-  //   logLevel: 'silent'
-  // };
   const devMiddleware = WebpackDevMiddleware(multiCompiler, {
     publicPath: clientConfig.output.publicPath,
     logLevel: 'silent',

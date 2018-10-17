@@ -107,7 +107,7 @@ export default (
     },
     plugins: [
       // new AutoDllPlugin(),
-      new webpack.DefinePlugin(dotenv),
+      new webpack.DefinePlugin(dotenv.stringified),
       new webpack.NamedModulesPlugin(),
       new WebpackBar({
         name: isServer ? 'server' : 'client'
