@@ -10,6 +10,8 @@ declare module 'start-server-webpack-plugin'
 
 declare module 'react-dev-utils/openBrowser'
 
+declare module 'webpack-manifest-plugin'
+
 declare module "*.json" {
 	const result: any;
 }

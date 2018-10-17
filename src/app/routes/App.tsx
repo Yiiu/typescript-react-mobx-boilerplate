@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Loadable from 'react-loadable';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import {Redirect,  Route, Switch  } from 'react-router-dom';
 
 import Error from './Error';
 

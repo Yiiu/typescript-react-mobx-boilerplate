@@ -37,6 +37,7 @@ export const render = (Component: typeof App) => {
       return newStores;
     }
   })();
+  console.log(process);
   Loadable.preloadReady().then(() => {
     ReactDOM.hydrate(
       <ReactHotLoader>

@@ -13,17 +13,16 @@ import Html from '@containers/Html';
 import { createStore } from '@stores';
 
 export default (req: Request, stats: any) => {
-  const modules: any[] = [];
+  const modules: string[] = [];
   const newStores = createStore();
-  const Router = StaticRouter as any;
   const markup = renderToString(
-    <Router location={req.url} context={{}}>
+    <StaticRouter location={req.url} context={{}}>
       <Provider { ...newStores }>
         <Loadable.Capture report={moduleName => modules.push(moduleName)}>
           <App />
         </Loadable.Capture>
       </Provider>
-    </Router>
+    </StaticRouter>
   );
   const bundles = getBundles(stats, modules);
   const js = bundles
